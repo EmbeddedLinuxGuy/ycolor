@@ -21,17 +21,18 @@ while (<P>) {
 }
 close P;
 my %class;
-#if ($n > 17) {
-    for my $k (keys %commit) {
-	$class{$k} = int($commit{$k} * 18 / $n);
-    }
-#}
+for my $k (keys %commit) {
+    $class{$k} = int($commit{$k} * 18 / $n);
+}
+$commit{'0000000'} = $class{'0000000' } = -1; # uncommitted changes
+$color{-1} = getNextColor;
 
 open (P, 'git annotate '.$ARGV[0].'|') or die $!;
 while (<P>) {
     my @f = split(/\t/, $_, 4);
     $f[0] =~ s/^\^//;
     $f[0] = substr($f[0], 0, 7);
+    defined ($class{$f[0]}) or die "class $f[0] not defined!\n";
     $color{$class{$f[0]}} ||= getNextColor;
     print "\e[".$color{$class{$f[0]}}."m".($n-$commit{$f[0]})." ".$f[3]."\e[0m";
 }
