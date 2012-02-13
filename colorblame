@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my %color;
+my $next_color = 30;
+
+sub getNextColor {
+    my $ret = $next_color++;
+    if ($next_color == 38) { $next_color++; }
+    elsif ($next_color == 48) { $next_color = 30; }
+    return $ret;
+}
+
+open (P, 'git log --pretty=oneline '.$ARGV[0].'|') or die $!;
+my $n = 0;
+my %commit;
+while (<P>) {
+    $commit{substr($_, 0, 7)} = $n++;
+}
+close P;
+my %class;
+#if ($n > 17) {
+    for my $k (keys %commit) {
+	$class{$k} = int($commit{$k} * 18 / $n);
+    }
+#}
+
+open (P, 'git annotate '.$ARGV[0].'|') or die $!;
+while (<P>) {
+    my @f = split(/\t/, $_, 4);
+    $f[0] =~ s/^\^//;
+    $f[0] = substr($f[0], 0, 7);
+    $color{$class{$f[0]}} ||= getNextColor;
+    print "\e[".$color{$class{$f[0]}}."m".($n-$commit{$f[0]})." ".$f[3]."\e[0m";
+}
+close P;

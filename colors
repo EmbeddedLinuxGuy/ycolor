@@ -1,0 +1,18 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my @parts = ('\u', '@', '\h', ':', '\w', '> ');
+#my %cmap = ();
+
+# \e[30m\e[40mHELLO\e[0m
+map {
+    print "\e[".$_.'m';
+    my $c = ($_+6) % 9;
+    map { my $c2 = ($_ eq 49 )? 8 : $_ % 8;
+          print "\e[".$_.'m'.$c.$c2;
+#          $cmap{$c*10+$c2} = [30+$c, $_];
+    } (40 .. 47, 49);
+    print "\e[0m\n";
+} (30 .. 38);
