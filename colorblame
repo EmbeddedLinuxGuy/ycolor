@@ -27,7 +27,7 @@ for my $k (keys %commit) {
 $commit{'0000000'} = $class{'0000000' } = -1; # uncommitted changes
 $color{-1} = getNextColor;
 
-open (P, 'git annotate '.$ARGV[0].'|') or die $!;
+open (P, 'git annotate -w '.$ARGV[0].'|') or die $!;
 while (<P>) {
     my @f = split(/\t/, $_, 4);
     $f[0] =~ s/^\^//;
